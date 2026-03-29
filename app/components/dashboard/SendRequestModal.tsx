@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Modal from '@/components/ui/Modal'
 import { clsx } from 'clsx'
+import { Sparkles, Clock, RefreshCw } from 'lucide-react'
 
 type Channel = 'sms' | 'email' | 'both'
 
@@ -12,6 +13,8 @@ interface SendRequestModalProps {
   onSuccess: (info?: { customerName: string; channel: string; reviewLink: string }) => void
   existingCustomers?: { id: string; name: string; phone: string | null; email: string | null }[]
 }
+
+const DEFAULT_TEMPLATE = 'Hi {customer_name}! {business_name} would love your feedback. Tap here to leave a quick Google review: {review_link} - Reply STOP to opt out'
 
 export default function SendRequestModal({
   open,
@@ -29,6 +32,16 @@ export default function SendRequestModal({
   const [error, setError] = useState<string | null>(null)
   const [warningMsg, setWarningMsg] = useState<string | null>(null)
 
+  // AI Personalization
+  const [serviceType, setServiceType] = useState('')
+  const [personalizing, setPersonalizing] = useState(false)
+  const [personalizedMessage, setPersonalizedMessage] = useState<string | null>(null)
+
+  // Optimal send time
+  const [scheduleOptimal, setScheduleOptimal] = useState(false)
+  const [optimalTime, setOptimalTime] = useState<{ recommendedTime: string; reason: string } | null>(null)
+  const [loadingTime, setLoadingTime] = useState(false)
+
   const handleClose = () => {
     setName('')
     setPhone('')
@@ -38,7 +51,76 @@ export default function SendRequestModal({
     setWarningMsg(null)
     setMode('new')
     setSelectedCustomerId('')
+    setServiceType('')
+    setPersonalizedMessage(null)
+    setScheduleOptimal(false)
+    setOptimalTime(null)
     onClose()
+  }
+
+  const getCustomerName = () => {
+    if (mode === 'existing') {
+      return existingCustomers.find(c => c.id === selectedCustomerId)?.name ?? 'Customer'
+    }
+    return name || 'Customer'
+  }
+
+  const handlePersonalize = async () => {
+    setPersonalizing(true)
+    try {
+      const res = await fetch('/api/ai/personalize-message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customerName: getCustomerName(),
+          businessName: 'Your Business',
+          serviceType: serviceType || undefined,
+          template: DEFAULT_TEMPLATE,
+        }),
+      })
+      const data = await res.json() as { message?: string; error?: string }
+      if (data.message) {
+        setPersonalizedMessage(data.message)
+      }
+    } catch {
+      // silently ignore, user still has default template
+    } finally {
+      setPersonalizing(false)
+    }
+  }
+
+  const handleToggleSchedule = async (checked: boolean) => {
+    setScheduleOptimal(checked)
+    if (checked && !optimalTime) {
+      setLoadingTime(true)
+      try {
+        const tz = Intl.DateTimeFormat().resolvedOptions().timeZone
+        const res = await fetch('/api/ai/optimal-time', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ timezone: tz }),
+        })
+        const data = await res.json() as { recommendedTime?: string; reason?: string; error?: string }
+        if (data.recommendedTime && data.reason) {
+          setOptimalTime({ recommendedTime: data.recommendedTime, reason: data.reason })
+        }
+      } catch {
+        // ignore
+      } finally {
+        setLoadingTime(false)
+      }
+    }
+  }
+
+  const formatOptimalTime = (iso: string) => {
+    return new Date(iso).toLocaleString('en-US', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric',
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    })
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -50,8 +132,8 @@ export default function SendRequestModal({
     try {
       const payload =
         mode === 'existing'
-          ? { customerId: selectedCustomerId, channel }
-          : { name, phone, email, channel }
+          ? { customerId: selectedCustomerId, channel, scheduled_at: scheduleOptimal && optimalTime ? optimalTime.recommendedTime : undefined }
+          : { name, phone, email, channel, scheduled_at: scheduleOptimal && optimalTime ? optimalTime.recommendedTime : undefined }
 
       const res = await fetch('/api/send-request', {
         method: 'POST',
@@ -71,7 +153,6 @@ export default function SendRequestModal({
         throw new Error(data.error ?? 'Failed to send request')
       }
 
-      // Determine customer name for success message
       let customerName = name
       if (mode === 'existing' && selectedCustomerId) {
         const found = existingCustomers.find((c) => c.id === selectedCustomerId)
@@ -224,6 +305,88 @@ export default function SendRequestModal({
             {channel === 'email' && 'Requires email address. Email not configured yet — request will be logged.'}
             {channel === 'both' && 'Requires phone + email. Messaging not configured yet — request will be logged.'}
           </p>
+        </div>
+
+        {/* AI Personalization */}
+        <div className="border border-amber-100 bg-amber-50/50 rounded-xl p-3 space-y-3">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">
+              Service type <span className="text-gray-400 font-normal">(optional)</span>
+            </label>
+            <input
+              type="text"
+              value={serviceType}
+              onChange={(e) => setServiceType(e.target.value)}
+              placeholder="e.g. oil change, haircut, deep clean…"
+              className="w-full px-3 py-2 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-amber-400 bg-white"
+            />
+          </div>
+
+          {personalizedMessage && (
+            <div className="bg-white border border-amber-200 rounded-lg p-3">
+              <p className="text-xs font-medium text-amber-700 mb-1">✨ Personalized message preview:</p>
+              <p className="text-xs text-gray-700 leading-relaxed">{personalizedMessage}</p>
+            </div>
+          )}
+
+          <button
+            type="button"
+            onClick={handlePersonalize}
+            disabled={personalizing}
+            className="flex items-center gap-2 text-sm font-medium text-amber-700 hover:text-amber-800 transition-colors disabled:opacity-50"
+          >
+            {personalizing ? (
+              <RefreshCw size={14} className="animate-spin" />
+            ) : (
+              <Sparkles size={14} />
+            )}
+            {personalizing ? 'Personalizing…' : '✨ Personalize with AI'}
+          </button>
+        </div>
+
+        {/* Optimal Send Time */}
+        <div className="border border-blue-100 bg-blue-50/40 rounded-xl p-3 space-y-2">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <div className="relative">
+              <input
+                type="checkbox"
+                checked={scheduleOptimal}
+                onChange={(e) => handleToggleSchedule(e.target.checked)}
+                className="sr-only"
+              />
+              <div className={clsx(
+                'w-10 h-5 rounded-full transition-colors',
+                scheduleOptimal ? 'bg-[#1a3a5c]' : 'bg-gray-200'
+              )} />
+              <div className={clsx(
+                'absolute top-0.5 left-0.5 w-4 h-4 bg-white rounded-full shadow transition-transform',
+                scheduleOptimal ? 'translate-x-5' : 'translate-x-0'
+              )} />
+            </div>
+            <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+              <Clock size={14} className="text-blue-600" />
+              Schedule for optimal time
+            </div>
+          </label>
+
+          {scheduleOptimal && (
+            <div className="ml-13 pl-1">
+              {loadingTime ? (
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <RefreshCw size={12} className="animate-spin" />
+                  Finding best time…
+                </div>
+              ) : optimalTime ? (
+                <div className="space-y-1">
+                  <p className="text-xs font-semibold text-blue-700">
+                    📅 {formatOptimalTime(optimalTime.recommendedTime)}
+                  </p>
+                  <p className="text-xs text-gray-500">{optimalTime.reason}</p>
+                  <p className="text-xs text-gray-400 italic">Note: Scheduled sending coming soon — your request will be logged with this time.</p>
+                </div>
+              ) : null}
+            </div>
+          )}
         </div>
 
         {warningMsg && (

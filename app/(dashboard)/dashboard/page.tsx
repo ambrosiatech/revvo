@@ -5,6 +5,7 @@ import { Send } from 'lucide-react'
 import StatsBar from '@/components/dashboard/StatsBar'
 import RecentRequests from '@/components/dashboard/RecentRequests'
 import SendRequestModal from '@/components/dashboard/SendRequestModal'
+import ReviewAlerts from '@/components/dashboard/ReviewAlerts'
 import { createBrowserClient, type ReviewRequest, type Customer } from '@/lib/supabase-browser'
 
 type RequestWithCustomer = ReviewRequest & { customers: { name: string } }
@@ -118,7 +119,7 @@ export default function DashboardPage() {
         </div>
         <button
           onClick={() => setModalOpen(true)}
-          className="flex items-center gap-2 bg-[#1a3a5c] text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-[#162e4a] transition-colors shadow-sm"
+          className="flex items-center gap-2 bg-[#f97316] text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-[#ea6c0a] transition-colors shadow-sm"
         >
           <Send size={16} />
           Send Review Request
@@ -149,6 +150,9 @@ export default function DashboardPage() {
           )}
         </div>
       )}
+
+      {/* Review Alerts */}
+      <ReviewAlerts reviews={[]} />
 
       {/* Stats */}
       {!loading && (

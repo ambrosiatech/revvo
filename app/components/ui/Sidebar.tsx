@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { LayoutDashboard, Users, Settings, LogOut, Star } from 'lucide-react'
 import { clsx } from 'clsx'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabase-browser'
 
 const NAV_ITEMS = [
   { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
@@ -73,3 +73,4 @@ export default function Sidebar({ businessName }: SidebarProps) {
     </aside>
   )
 }
+

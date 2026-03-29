@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import CustomerTable from '@/components/customers/CustomerTable'
 import SendRequestModal from '@/components/dashboard/SendRequestModal'
-import { createBrowserClient, type Customer } from '@/lib/supabase'
+import { createBrowserClient, type Customer } from '@/lib/supabase-browser'
 
 interface CustomerWithStats extends Customer {
   requestCount: number
@@ -129,3 +129,4 @@ export default function CustomersPage() {
     </div>
   )
 }
+

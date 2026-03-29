@@ -5,7 +5,7 @@ import { Send } from 'lucide-react'
 import StatsBar from '@/components/dashboard/StatsBar'
 import RecentRequests from '@/components/dashboard/RecentRequests'
 import SendRequestModal from '@/components/dashboard/SendRequestModal'
-import { createBrowserClient, type ReviewRequest, type Customer } from '@/lib/supabase'
+import { createBrowserClient, type ReviewRequest, type Customer } from '@/lib/supabase-browser'
 
 type RequestWithCustomer = ReviewRequest & { customers: { name: string } }
 
@@ -154,3 +154,4 @@ export default function DashboardPage() {
     </div>
   )
 }
+

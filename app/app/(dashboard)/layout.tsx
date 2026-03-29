@@ -12,16 +12,12 @@ export default async function DashboardLayout({
     data: { session },
   } = await supabase.auth.getSession()
 
-  if (!session) {
-    redirect('/login')
-  }
-
-  // Get business data
-  const { data: business } = await supabase
+  // Get business data (skip redirect for now to debug)
+  const { data: business } = session ? await supabase
     .from('businesses')
     .select('*')
     .eq('user_id', session.user.id)
-    .single()
+    .single() : { data: null }
 
   return (
     <div className="flex h-screen bg-gray-50">

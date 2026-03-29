@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { createBrowserClient } from '@/lib/supabase'
+import { createBrowserClient } from '@/lib/supabase-browser'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -36,21 +36,22 @@ export default function SignupPage() {
     }
 
     if (data.user) {
-      // Create business record
-      const { error: businessError } = await supabase.from('businesses').insert({
-        user_id: data.user.id,
-        name: businessName,
+      // Create business record via API (uses service role to bypass RLS)
+      const res = await fetch('/api/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: data.user.id, businessName }),
       })
 
-      if (businessError) {
-        setError('Account created but failed to set up business. Please contact support.')
+      if (!res.ok) {
+        const { error: bizErr } = await res.json()
+        setError(`Account created but failed to set up business: ${bizErr}`)
         setLoading(false)
         return
       }
     }
 
-    router.push('/dashboard')
-    router.refresh()
+    window.location.href = '/dashboard'
   }
 
   return (
@@ -130,3 +131,4 @@ export default function SignupPage() {
     </div>
   )
 }
+

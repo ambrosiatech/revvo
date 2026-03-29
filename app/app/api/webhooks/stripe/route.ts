@@ -122,9 +122,5 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// Stripe requires raw body — disable Next.js body parsing
-export const config = {
-  api: {
-    bodyParser: false,
-  },
-}
+// Stripe requires raw body
+export const dynamic = 'force-dynamic'

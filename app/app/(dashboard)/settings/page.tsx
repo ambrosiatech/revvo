@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import { createBrowserClient, type Business } from '@/lib/supabase'
+import { createBrowserClient, type Business } from '@/lib/supabase-browser'
 
 export default function SettingsPage() {
   const [business, setBusiness] = useState<Business | null>(null)
@@ -182,3 +182,4 @@ export default function SettingsPage() {
     </div>
   )
 }
+

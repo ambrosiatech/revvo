@@ -5,7 +5,7 @@ export default function Hero() {
         {/* Eyebrow badge */}
         <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-sm font-medium mb-6" style={{ color: "#1a3a5c" }}>
           <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" aria-hidden="true" />
-          Now in early access
+          Now live — 14-day free trial
         </div>
 
         {/* H1 */}
@@ -22,7 +22,7 @@ export default function Hero() {
         {/* CTA group */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-5">
           <a
-            href="#waitlist"
+            href="https://review-pilot-app.vercel.app/signup"
             className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-8 py-4 rounded-md text-base font-bold text-white shadow-md transition-all duration-200 hover:opacity-90 active:scale-95"
             style={{ backgroundColor: "#f97316" }}
           >

@@ -5,7 +5,7 @@ export default function Footer() {
         {/* Logo + copyright */}
         <div className="flex items-center gap-2">
           <span className="font-bold text-sm" style={{ color: "#1a3a5c" }}>
-            ReviewPilot
+            Revvo
           </span>
           <span className="text-sm" aria-hidden="true">⭐</span>
           <span className="text-gray-400 text-sm">© 2024</span>

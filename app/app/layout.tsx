@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'ReviewPilot — Automate Your Google Reviews',
+  title: 'Revvo — Automate Your Google Reviews',
   description:
     'Send automated Google review requests via SMS and email. Built for local service businesses.',
   icons: {
@@ -21,3 +21,4 @@ export default function RootLayout({
     </html>
   )
 }
+

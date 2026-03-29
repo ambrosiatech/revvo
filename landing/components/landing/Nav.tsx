@@ -21,9 +21,9 @@ export default function Nav() {
     >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <a href="#" className="flex items-center gap-2 group" aria-label="ReviewPilot home">
+        <a href="#" className="flex items-center gap-2 group" aria-label="Revvo home">
           <span className="text-xl font-bold tracking-tight" style={{ color: "#1a3a5c" }}>
-            ReviewPilot
+            Revvo
           </span>
           <span className="text-xl" aria-hidden="true">⭐</span>
         </a>

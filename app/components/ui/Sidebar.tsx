@@ -33,7 +33,7 @@ export default function Sidebar({ businessName }: SidebarProps) {
       <div className="px-6 py-6 border-b border-[#2c578d]">
         <div className="flex items-center gap-2">
           <Star className="text-yellow-400" size={20} fill="currentColor" />
-          <span className="text-white font-bold text-lg">ReviewPilot</span>
+          <span className="text-white font-bold text-lg">Revvo</span>
         </div>
         <p className="text-blue-300 text-xs mt-1 truncate">{businessName}</p>
       </div>
@@ -73,4 +73,5 @@ export default function Sidebar({ businessName }: SidebarProps) {
     </aside>
   )
 }
+
 

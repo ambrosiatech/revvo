@@ -16,6 +16,12 @@ interface DashboardStats {
   thisMonth: number
 }
 
+interface LastSentInfo {
+  customerName: string
+  channel: string
+  reviewLink: string
+}
+
 export default function DashboardPage() {
   const [modalOpen, setModalOpen] = useState(false)
   const [stats, setStats] = useState<DashboardStats>({
@@ -28,6 +34,7 @@ export default function DashboardPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [loading, setLoading] = useState(true)
   const [successMsg, setSuccessMsg] = useState<string | null>(null)
+  const [lastSent, setLastSent] = useState<LastSentInfo | null>(null)
 
   const supabase = createBrowserClient()
 
@@ -86,10 +93,19 @@ export default function DashboardPage() {
     loadData()
   }, [loadData])
 
-  const handleSendSuccess = () => {
+  const handleSendSuccess = (info?: { customerName: string; channel: string; reviewLink: string }) => {
+    if (info) {
+      setLastSent(info)
+    }
     setSuccessMsg('Review request sent! 🎉')
     loadData()
-    setTimeout(() => setSuccessMsg(null), 4000)
+    setTimeout(() => setSuccessMsg(null), 6000)
+  }
+
+  const CHANNEL_LABELS: Record<string, string> = {
+    sms: '📱 SMS',
+    email: '✉️ Email',
+    both: '📱✉️ SMS + Email',
   }
 
   return (
@@ -109,10 +125,28 @@ export default function DashboardPage() {
         </button>
       </div>
 
-      {/* Success message */}
+      {/* Success message with details */}
       {successMsg && (
-        <div className="bg-emerald-50 border border-emerald-200 text-emerald-700 px-4 py-3 rounded-lg text-sm font-medium">
-          {successMsg}
+        <div className="bg-emerald-50 border border-emerald-200 rounded-lg px-4 py-3">
+          <p className="text-emerald-700 text-sm font-medium">{successMsg}</p>
+          {lastSent && (
+            <p className="text-emerald-600 text-xs mt-1">
+              Sent to <strong>{lastSent.customerName}</strong> via {CHANNEL_LABELS[lastSent.channel] ?? lastSent.channel}
+              {' · '}
+              <button
+                onClick={async () => {
+                  try {
+                    await navigator.clipboard.writeText(lastSent.reviewLink)
+                  } catch {
+                    // ignore
+                  }
+                }}
+                className="underline hover:no-underline"
+              >
+                Copy review link
+              </button>
+            </p>
+          )}
         </div>
       )}
 
@@ -140,7 +174,10 @@ export default function DashboardPage() {
         {loading ? (
           <div className="bg-white rounded-xl border border-gray-100 h-48 animate-pulse" />
         ) : (
-          <RecentRequests requests={recentRequests} />
+          <RecentRequests
+            requests={recentRequests}
+            onSendFirst={() => setModalOpen(true)}
+          />
         )}
       </div>
 
@@ -154,4 +191,3 @@ export default function DashboardPage() {
     </div>
   )
 }
-

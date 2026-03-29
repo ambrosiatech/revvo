@@ -1,4 +1,4 @@
-# ReviewPilot
+# Revvo
 
 > Send automated Google review requests via SMS + email. Built for local service businesses.
 
@@ -22,7 +22,7 @@ $29/month · 14-day free trial · No ops
 ### 1. Clone & install
 
 ```bash
-cd review-pilot-app
+cd revvo-app
 npm install
 ```
 
@@ -57,7 +57,7 @@ cp .env.local.example .env.local
 
 ### 4. Stripe setup
 
-1. Create a product in Stripe Dashboard: "ReviewPilot Pro" at $29/month
+1. Create a product in Stripe Dashboard: "Revvo Pro" at $29/month
 2. Copy the **Price ID** (starts with `price_`) to `STRIPE_PRICE_ID`
 3. Set up webhook endpoint: `https://yourdomain.com/api/webhooks/stripe`
    - Events to listen for: `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`
@@ -90,7 +90,7 @@ Open [http://localhost:3000](http://localhost:3000)
 1. Business signs up → 14-day free trial
 2. Business adds customers (name, phone, email)
 3. Business clicks "Send Review Request" → chooses SMS / Email / Both
-4. Customer receives message with link to `https://reviewpilot.app/review/{token}`
+4. Customer receives message with link to `https://Revvo.app/review/{token}`
 5. Customer taps link → click is recorded → redirected to Google review page
 6. Business sees stats: sent, clicked, estimated reviews
 
@@ -145,3 +145,4 @@ components/
   dashboard/        # StatsBar, RecentRequests, SendRequestModal, DashboardPageUI
   customers/        # CustomerTable, CustomersPageUI
 ```
+

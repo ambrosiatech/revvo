@@ -1,31 +1,31 @@
 const rows = [
   {
     feature: "Monthly Price",
-    reviewpilot: "$29",
+    Revvo: "$29",
     birdeye: "$299",
     podium: "$399",
   },
   {
     feature: "Review Requests",
-    reviewpilot: "✓",
+    Revvo: "✓",
     birdeye: "✓",
     podium: "✓",
   },
   {
     feature: "SMS + Email",
-    reviewpilot: "✓",
+    Revvo: "✓",
     birdeye: "✓",
     podium: "✓",
   },
   {
     feature: "Simple Setup",
-    reviewpilot: "✓",
+    Revvo: "✓",
     birdeye: "✗",
     podium: "✗",
   },
   {
     feature: "No Contract",
-    reviewpilot: "✓",
+    Revvo: "✓",
     birdeye: "✗",
     podium: "✗",
   },
@@ -76,13 +76,13 @@ export default function ComparisonTable() {
                 <th className="text-left py-4 px-6 font-semibold text-gray-500 bg-gray-50 w-2/5">
                   Feature
                 </th>
-                {/* ReviewPilot — highlighted */}
+                {/* Revvo — highlighted */}
                 <th
                   className="py-4 px-4 text-center font-bold text-white text-base w-1/5 relative"
                   style={{ backgroundColor: "#1a3a5c" }}
                 >
                   <div className="flex flex-col items-center gap-0.5">
-                    <span>ReviewPilot</span>
+                    <span>Revvo</span>
                     <span className="text-xs font-normal opacity-75 uppercase tracking-wider">⭐ Our pick</span>
                   </div>
                 </th>
@@ -101,18 +101,18 @@ export default function ComparisonTable() {
                   className={`border-b border-gray-50 last:border-0 ${i % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}
                 >
                   <td className="py-4 px-6 font-medium text-gray-700">{row.feature}</td>
-                  {/* ReviewPilot column — blue tint */}
+                  {/* Revvo column — blue tint */}
                   <td
                     className="py-4 px-4 text-center font-bold"
                     style={{ backgroundColor: "rgba(26,58,92,0.06)" }}
                   >
                     {row.feature === "Monthly Price" ? (
                       <span className="text-base font-extrabold" style={{ color: "#1a3a5c" }}>
-                        {row.reviewpilot}
+                        {row.Revvo}
                       </span>
                     ) : (
                       <div className="flex justify-center">
-                        <Check value={row.reviewpilot} />
+                        <Check value={row.Revvo} />
                       </div>
                     )}
                   </td>

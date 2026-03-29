@@ -9,7 +9,7 @@ type Channel = 'sms' | 'email' | 'both'
 interface SendRequestModalProps {
   open: boolean
   onClose: () => void
-  onSuccess: () => void
+  onSuccess: (info?: { customerName: string; channel: string; reviewLink: string }) => void
   existingCustomers?: { id: string; name: string; phone: string | null; email: string | null }[]
 }
 
@@ -27,6 +27,7 @@ export default function SendRequestModal({
   const [channel, setChannel] = useState<Channel>('both')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [warningMsg, setWarningMsg] = useState<string | null>(null)
 
   const handleClose = () => {
     setName('')
@@ -34,6 +35,7 @@ export default function SendRequestModal({
     setEmail('')
     setChannel('both')
     setError(null)
+    setWarningMsg(null)
     setMode('new')
     setSelectedCustomerId('')
     onClose()
@@ -43,6 +45,7 @@ export default function SendRequestModal({
     e.preventDefault()
     setLoading(true)
     setError(null)
+    setWarningMsg(null)
 
     try {
       const payload =
@@ -56,13 +59,31 @@ export default function SendRequestModal({
         body: JSON.stringify(payload),
       })
 
-      const data = await res.json() as { error?: string }
+      const data = await res.json() as {
+        error?: string
+        success?: boolean
+        reviewLink?: string
+        warnings?: string[]
+        partial?: boolean
+      }
 
-      if (!res.ok) {
+      if (!res.ok && !data.partial) {
         throw new Error(data.error ?? 'Failed to send request')
       }
 
-      onSuccess()
+      // Determine customer name for success message
+      let customerName = name
+      if (mode === 'existing' && selectedCustomerId) {
+        const found = existingCustomers.find((c) => c.id === selectedCustomerId)
+        customerName = found?.name ?? 'Customer'
+      }
+
+      onSuccess({
+        customerName,
+        channel,
+        reviewLink: data.reviewLink ?? '',
+      })
+
       handleClose()
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
@@ -71,10 +92,10 @@ export default function SendRequestModal({
     }
   }
 
-  const CHANNELS: { value: Channel; label: string }[] = [
-    { value: 'sms', label: '📱 SMS' },
-    { value: 'email', label: '✉️ Email' },
-    { value: 'both', label: '📱✉️ Both' },
+  const CHANNELS: { value: Channel; label: string; desc: string }[] = [
+    { value: 'sms', label: '📱 SMS', desc: 'Text message' },
+    { value: 'email', label: '✉️ Email', desc: 'Email' },
+    { value: 'both', label: '📱✉️ Both', desc: 'SMS + Email' },
   ]
 
   const selectedExisting = existingCustomers.find((c) => c.id === selectedCustomerId)
@@ -198,7 +219,16 @@ export default function SendRequestModal({
               </button>
             ))}
           </div>
+          <p className="text-xs text-gray-400 mt-1.5">
+            {channel === 'sms' && 'Requires phone number. SMS not configured yet — request will be logged.'}
+            {channel === 'email' && 'Requires email address. Email not configured yet — request will be logged.'}
+            {channel === 'both' && 'Requires phone + email. Messaging not configured yet — request will be logged.'}
+          </p>
         </div>
+
+        {warningMsg && (
+          <p className="text-sm text-amber-700 bg-amber-50 px-3 py-2 rounded-lg">{warningMsg}</p>
+        )}
 
         {error && (
           <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>

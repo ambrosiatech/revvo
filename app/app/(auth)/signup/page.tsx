@@ -58,7 +58,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#1a3a5c] to-[#2c578d] px-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-white">⭐ ReviewPilot</h1>
+          <h1 className="text-3xl font-bold text-white">⭐ Revvo</h1>
           <p className="text-blue-200 mt-2">Start your 14-day free trial</p>
         </div>
 
@@ -131,4 +131,5 @@ export default function SignupPage() {
     </div>
   )
 }
+
 

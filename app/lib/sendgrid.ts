@@ -1,6 +1,6 @@
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY!
-const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL ?? 'noreply@reviewpilot.app'
-const FROM_NAME = process.env.SENDGRID_FROM_NAME ?? 'ReviewPilot'
+const FROM_EMAIL = process.env.SENDGRID_FROM_EMAIL ?? 'noreply@Revvo.app'
+const FROM_NAME = process.env.SENDGRID_FROM_NAME ?? 'Revvo'
 
 interface SendEmailParams {
   to: string
@@ -40,7 +40,7 @@ export async function sendEmailReviewRequest({
           <!-- Header -->
           <tr>
             <td style="background:#1a3a5c;padding:32px 40px;text-align:center;">
-              <p style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">⭐ ReviewPilot</p>
+              <p style="margin:0;color:#ffffff;font-size:22px;font-weight:700;letter-spacing:-0.5px;">⭐ Revvo</p>
             </td>
           </tr>
           <!-- Body -->
@@ -73,7 +73,7 @@ export async function sendEmailReviewRequest({
           <tr>
             <td style="background:#f9fafb;padding:20px 40px;border-top:1px solid #e5e7eb;">
               <p style="margin:0;font-size:12px;color:#9ca3af;text-align:center;">
-                This email was sent on behalf of ${businessName} via ReviewPilot.<br>
+                This email was sent on behalf of ${businessName} via Revvo.<br>
                 <a href="${reviewLink}?unsubscribe=1" style="color:#9ca3af;">Unsubscribe</a>
               </p>
             </td>
@@ -86,7 +86,7 @@ export async function sendEmailReviewRequest({
 </html>
 `.trim()
 
-  const textContent = `Hi ${firstName}!\n\nThank you for choosing ${businessName}. We'd love your feedback!\n\nLeave a Google Review: ${reviewLink}\n\nTakes less than 60 seconds. Thank you!\n\n— ${businessName} via ReviewPilot`
+  const textContent = `Hi ${firstName}!\n\nThank you for choosing ${businessName}. We'd love your feedback!\n\nLeave a Google Review: ${reviewLink}\n\nTakes less than 60 seconds. Thank you!\n\n— ${businessName} via Revvo`
 
   const payload = {
     personalizations: [
@@ -116,3 +116,4 @@ export async function sendEmailReviewRequest({
     throw new Error(`SendGrid error ${response.status}: ${errorText}`)
   }
 }
+

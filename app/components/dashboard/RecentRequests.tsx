@@ -1,8 +1,13 @@
+'use client'
+
+import { useState } from 'react'
 import { type ReviewRequest } from '@/lib/supabase'
+import { Copy, Check } from 'lucide-react'
 import { clsx } from 'clsx'
 
 interface RecentRequestsProps {
   requests: (ReviewRequest & { customers: { name: string } })[]
+  onSendFirst?: () => void
 }
 
 const STATUS_STYLES: Record<string, string> = {
@@ -26,12 +31,65 @@ function formatDate(dateStr: string) {
   })
 }
 
-export default function RecentRequests({ requests }: RecentRequestsProps) {
+const APP_URL =
+  typeof window !== 'undefined'
+    ? window.location.origin
+    : process.env.NEXT_PUBLIC_APP_URL ?? 'https://revvo-app.vercel.app'
+
+function CopyLinkButton({ token }: { token: string }) {
+  const [copied, setCopied] = useState(false)
+  const link = `${APP_URL}/review/${token}`
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(link)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    } catch {
+      // Fallback
+      const el = document.createElement('textarea')
+      el.value = link
+      document.body.appendChild(el)
+      el.select()
+      document.execCommand('copy')
+      document.body.removeChild(el)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000)
+    }
+  }
+
+  return (
+    <button
+      onClick={handleCopy}
+      className={clsx(
+        'flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-md border transition-all',
+        copied
+          ? 'border-emerald-300 text-emerald-700 bg-emerald-50'
+          : 'border-gray-200 text-gray-500 hover:border-[#1a3a5c] hover:text-[#1a3a5c]'
+      )}
+      title="Copy review link"
+    >
+      {copied ? <Check size={12} /> : <Copy size={12} />}
+      {copied ? 'Copied!' : 'Copy link'}
+    </button>
+  )
+}
+
+export default function RecentRequests({ requests, onSendFirst }: RecentRequestsProps) {
   if (requests.length === 0) {
     return (
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-8 text-center">
-        <p className="text-gray-400 text-sm">No review requests sent yet.</p>
-        <p className="text-gray-400 text-sm mt-1">Click &quot;Send Review Request&quot; to get started.</p>
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-12 text-center">
+        <div className="text-4xl mb-3">📬</div>
+        <h3 className="font-semibold text-gray-800 mb-1">No review requests yet</h3>
+        <p className="text-gray-400 text-sm mb-5">Send your first request and start collecting Google reviews!</p>
+        {onSendFirst && (
+          <button
+            onClick={onSendFirst}
+            className="bg-[#1a3a5c] text-white font-semibold px-5 py-2.5 rounded-lg hover:bg-[#162e4a] transition-colors text-sm"
+          >
+            Send your first request →
+          </button>
+        )}
       </div>
     )
   }
@@ -45,6 +103,7 @@ export default function RecentRequests({ requests }: RecentRequestsProps) {
             <th className="text-left px-5 py-3 font-medium text-gray-600">Channel</th>
             <th className="text-left px-5 py-3 font-medium text-gray-600">Sent</th>
             <th className="text-left px-5 py-3 font-medium text-gray-600">Status</th>
+            <th className="px-5 py-3" />
           </tr>
         </thead>
         <tbody>
@@ -67,6 +126,9 @@ export default function RecentRequests({ requests }: RecentRequestsProps) {
                   {req.status}
                 </span>
               </td>
+              <td className="px-5 py-3.5 text-right">
+                <CopyLinkButton token={req.token} />
+              </td>
             </tr>
           ))}
         </tbody>
@@ -74,3 +136,4 @@ export default function RecentRequests({ requests }: RecentRequestsProps) {
     </div>
   )
 }
+

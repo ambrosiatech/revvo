@@ -7,7 +7,7 @@ export default function PrivacyPage() {
       <section className="space-y-6 text-gray-700">
         <div>
           <h2 className="text-xl font-semibold text-[#1a3a5c] mb-2">1. Information We Collect</h2>
-          <p>We collect information you provide directly to us, including your name, email address, and business information when you sign up for ReviewPilot. We also collect customer contact information (name, phone number, email) that you enter to send review requests.</p>
+          <p>We collect information you provide directly to us, including your name, email address, and business information when you sign up for Revvo. We also collect customer contact information (name, phone number, email) that you enter to send review requests.</p>
         </div>
 
         <div>
@@ -17,7 +17,7 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-[#1a3a5c] mb-2">3. SMS and Email Communications</h2>
-          <p>By using ReviewPilot, you confirm that you have obtained appropriate consent from your customers to receive SMS and email communications from your business. You are responsible for ensuring compliance with applicable laws including the TCPA, CAN-SPAM Act, and other relevant regulations.</p>
+          <p>By using Revvo, you confirm that you have obtained appropriate consent from your customers to receive SMS and email communications from your business. You are responsible for ensuring compliance with applicable laws including the TCPA, CAN-SPAM Act, and other relevant regulations.</p>
         </div>
 
         <div>
@@ -37,7 +37,7 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-[#1a3a5c] mb-2">7. Your Rights</h2>
-          <p>You have the right to access, update, or delete your personal information. You may also opt out of marketing communications at any time. To exercise these rights, please contact us at privacy@reviewpilot.app.</p>
+          <p>You have the right to access, update, or delete your personal information. You may also opt out of marketing communications at any time. To exercise these rights, please contact us at privacy@Revvo.app.</p>
         </div>
 
         <div>
@@ -52,12 +52,12 @@ export default function PrivacyPage() {
 
         <div>
           <h2 className="text-xl font-semibold text-[#1a3a5c] mb-2">10. Contact Us</h2>
-          <p>If you have any questions about this Privacy Policy, please contact us at: <a href="mailto:privacy@reviewpilot.app" className="text-[#f97316] underline">privacy@reviewpilot.app</a></p>
+          <p>If you have any questions about this Privacy Policy, please contact us at: <a href="mailto:privacy@Revvo.app" className="text-[#f97316] underline">privacy@Revvo.app</a></p>
         </div>
       </section>
 
       <div className="mt-12 pt-8 border-t border-gray-200">
-        <a href="/" className="text-[#f97316] hover:underline">← Back to ReviewPilot</a>
+        <a href="/" className="text-[#f97316] hover:underline">← Back to Revvo</a>
       </div>
     </main>
   )

@@ -1,3 +1,4 @@
+import { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { createAdminClient } from '@/lib/supabase'
 import { getReviewUrl } from '@/lib/google-business'
@@ -5,6 +6,23 @@ import ReviewRedirectClient from './ReviewRedirectClient'
 
 interface PageProps {
   params: { token: string }
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const admin = createAdminClient()
+  const { data: reviewRequest } = await admin
+    .from('review_requests')
+    .select('businesses(name)')
+    .eq('token', params.token)
+    .single()
+
+  const business = reviewRequest?.businesses as unknown as { name: string } | null
+  const name = business?.name ?? 'Revvo'
+
+  return {
+    title: `Leave a Review for ${name}`,
+    description: `Share your experience with ${name}. Your feedback helps others find great local businesses.`,
+  }
 }
 
 export default async function ReviewPage({ params }: PageProps) {
@@ -35,11 +53,13 @@ export default async function ReviewPage({ params }: PageProps) {
 
   const business = reviewRequest.businesses as { name: string; google_place_id: string | null }
   const googleReviewUrl = getReviewUrl(business)
+  const hasPlaceId = Boolean(business.google_place_id)
 
   return (
     <ReviewRedirectClient
       businessName={business.name}
       googleReviewUrl={googleReviewUrl}
+      hasPlaceId={hasPlaceId}
     />
   )
 }

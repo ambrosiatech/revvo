@@ -60,7 +60,7 @@ export default function Waitlist() {
           Get Early Access
         </h2>
         <p className="text-blue-200 text-base leading-relaxed mb-10">
-          Be the first to know when ReviewPilot launches.
+          Be the first to know when Revvo launches.
         </p>
 
         {/* Success state */}

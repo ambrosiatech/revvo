@@ -1,7 +1,12 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
+import { ExternalLink, Star } from 'lucide-react'
 import { createBrowserClient, type Business } from '@/lib/supabase-browser'
+
+const APP_URL = typeof window !== 'undefined'
+  ? window.location.origin
+  : 'https://revvo-app.vercel.app'
 
 export default function SettingsPage() {
   const [business, setBusiness] = useState<Business | null>(null)
@@ -11,6 +16,7 @@ export default function SettingsPage() {
   const [success, setSuccess] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [portalLoading, setPortalLoading] = useState(false)
+  const [previewToken, setPreviewToken] = useState<string | null>(null)
 
   const supabase = createBrowserClient()
 
@@ -28,6 +34,18 @@ export default function SettingsPage() {
       setBusiness(data as Business)
       setName(data.name ?? '')
       setGooglePlaceId(data.google_place_id ?? '')
+    }
+
+    // Get a sample token for preview
+    const { data: sampleRequest } = await supabase
+      .from('review_requests')
+      .select('token')
+      .eq('business_id', data?.id)
+      .limit(1)
+      .single()
+
+    if (sampleRequest) {
+      setPreviewToken(sampleRequest.token)
     }
   }, [supabase])
 
@@ -78,6 +96,14 @@ export default function SettingsPage() {
       })
     : null
 
+  const reviewLink = previewToken
+    ? `${APP_URL}/review/${previewToken}`
+    : `${APP_URL}/review/[token]`
+
+  const googleReviewPreviewUrl = googlePlaceId
+    ? `https://search.google.com/local/writereview?placeid=${googlePlaceId}`
+    : null
+
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
@@ -106,25 +132,64 @@ export default function SettingsPage() {
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Google Place ID
             </label>
-            <input
-              type="text"
-              value={googlePlaceId}
-              onChange={(e) => setGooglePlaceId(e.target.value)}
-              placeholder="ChIJ..."
-              className="w-full px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3a5c]"
-            />
-            <p className="text-xs text-gray-400 mt-1">
-              Find your Place ID at{' '}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={googlePlaceId}
+                onChange={(e) => setGooglePlaceId(e.target.value)}
+                placeholder="ChIJ..."
+                className="flex-1 px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#1a3a5c] font-mono text-sm"
+              />
               <a
-                href="https://developers.google.com/maps/documentation/places/web-service/place-id"
+                href="https://developers.google.com/maps/documentation/javascript/examples/places-placeid-finder"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-[#1a3a5c] hover:underline"
+                className="flex items-center gap-1.5 px-3 py-2.5 border border-gray-200 rounded-lg text-sm text-[#1a3a5c] font-medium hover:bg-gray-50 transition-colors whitespace-nowrap"
               >
-                Google Maps Place ID Finder
+                <ExternalLink size={14} />
+                Find my ID
               </a>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+              Your Google Place ID connects review requests directly to your Google listing.
             </p>
           </div>
+
+          {/* Preview */}
+          {(googlePlaceId || previewToken) && (
+            <div className="bg-gray-50 border border-gray-100 rounded-xl p-4">
+              <p className="text-xs font-medium text-gray-500 mb-2 uppercase tracking-wide">Review link preview</p>
+              <div className="space-y-2">
+                <div>
+                  <p className="text-xs text-gray-400 mb-1">Customer landing page:</p>
+                  <code className="text-xs text-[#1a3a5c] bg-blue-50 px-2 py-1 rounded break-all block">
+                    {reviewLink}
+                  </code>
+                </div>
+                {googleReviewPreviewUrl && (
+                  <div>
+                    <p className="text-xs text-gray-400 mb-1">Where it sends them:</p>
+                    <a
+                      href={googleReviewPreviewUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs text-emerald-700 bg-emerald-50 px-2 py-1 rounded break-all block hover:underline"
+                    >
+                      {googleReviewPreviewUrl.length > 60
+                        ? googleReviewPreviewUrl.substring(0, 60) + '...'
+                        : googleReviewPreviewUrl}
+                    </a>
+                  </div>
+                )}
+              </div>
+              {!googlePlaceId && (
+                <div className="flex items-center gap-2 mt-2 text-amber-600">
+                  <Star size={12} className="text-amber-500" fill="currentColor" />
+                  <p className="text-xs">Set your Place ID above to send customers directly to your Google review page</p>
+                </div>
+              )}
+            </div>
+          )}
 
           {error && (
             <p className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg">{error}</p>
@@ -152,7 +217,7 @@ export default function SettingsPage() {
         <div className="flex items-center justify-between">
           <div>
             <p className="text-sm font-medium text-gray-900">
-              {isTrialing ? '🎉 Free Trial' : 'ReviewPilot Pro'}
+              {isTrialing ? '🎉 Free Trial' : 'Revvo Pro'}
             </p>
             <p className="text-sm text-gray-500 mt-0.5">
               {isTrialing

@@ -16,7 +16,7 @@ export default function Hero() {
 
         {/* Subtext */}
         <p className="text-lg sm:text-xl text-gray-600 leading-relaxed max-w-2xl mx-auto mb-8 text-pretty">
-          ReviewPilot automatically texts and emails your customers after every job — so you get the reviews without the awkward ask.
+          Revvo automatically texts and emails your customers after every job — so you get the reviews without the awkward ask.
         </p>
 
         {/* CTA group */}
@@ -44,7 +44,7 @@ export default function Hero() {
                 RP
               </div>
               <div>
-                <p className="text-xs font-semibold text-gray-800">ReviewPilot</p>
+                <p className="text-xs font-semibold text-gray-800">Revvo</p>
                 <p className="text-xs text-gray-400">Text Message · Just now</p>
               </div>
             </div>

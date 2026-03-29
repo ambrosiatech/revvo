@@ -7,8 +7,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'ReviewPilot — More 5-Star Reviews. On Autopilot.',
-  description: 'ReviewPilot automatically texts and emails your customers after every job — so you get more Google reviews without the awkward ask. Starting at $29/month.',
+  title: 'Revvo — More 5-Star Reviews. On Autopilot.',
+  description: 'Revvo automatically texts and emails your customers after every job — so you get more Google reviews without the awkward ask. Starting at $29/month.',
   generator: 'v0.app',
   icons: {
     icon: [
